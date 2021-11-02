@@ -1,5 +1,5 @@
 import path from "path"
-// import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin"
+import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin"
 import webpack, { Configuration as WebpackConfiguration } from "webpack"
 // import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin"
 // import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer"
@@ -47,12 +47,12 @@ const config: Configuration = {
             "@babel/preset-typescript",
           ],
           env: {
-            development: {
-              plugins: [["@emotion/babel-plugin", { sourceMap: true }], require.resolve("react-refresh/babel")],
-            },
-            production: {
-              plugins: ["@emotion/babel-plugin"],
-            },
+            //   development: {
+            //     plugins: [["@emotion/babel-plugin", { sourceMap: true }], require.resolve("react-refresh/babel")],
+            //   },
+            //   production: {
+            //     plugins: ["@emotion/babel-plugin"],
+            //   },
           },
         },
       },
@@ -62,7 +62,7 @@ const config: Configuration = {
       },
     ],
   },
-  plugins: [],
+  plugins: [new ReactRefreshWebpackPlugin(), new webpack.HotModuleReplacementPlugin()],
   output: {
     path: path.join(__dirname, "dist"),
     filename: "[name].js",
@@ -70,7 +70,8 @@ const config: Configuration = {
   },
   devServer: {
     port: 3090,
-    // publicPath: "/dist/"
+    devMiddleware: { publicPath: "/dist/" },
+    static: { directory: path.resolve(__dirname) },
   },
 }
 
