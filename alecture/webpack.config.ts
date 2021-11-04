@@ -1,7 +1,7 @@
 import path from "path"
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin"
 import webpack, { Configuration as WebpackConfiguration } from "webpack"
-// import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin"
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin"
 // import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer"
 import { Configuration as WebpackDevServerConfiguration } from "webpack-dev-server"
 
@@ -62,7 +62,11 @@ const config: Configuration = {
       },
     ],
   },
-  plugins: [new ReactRefreshWebpackPlugin(), new webpack.HotModuleReplacementPlugin()],
+  plugins: [
+    new ForkTsCheckerWebpackPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new ReactRefreshWebpackPlugin(),
+  ],
   output: {
     path: path.join(__dirname, "dist"),
     filename: "[name].js",
@@ -73,6 +77,12 @@ const config: Configuration = {
     port: 3090,
     devMiddleware: { publicPath: "/dist/" },
     static: { directory: path.resolve(__dirname) },
+    proxy: {
+      "/api/": {
+        target: "http://localhost:3095",
+        changeOrigin: true,
+      },
+    },
   },
 }
 
