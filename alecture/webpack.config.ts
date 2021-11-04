@@ -47,12 +47,12 @@ const config: Configuration = {
             "@babel/preset-typescript",
           ],
           env: {
-            //   development: {
-            //     plugins: [["@emotion/babel-plugin", { sourceMap: true }], require.resolve("react-refresh/babel")],
-            //   },
-            //   production: {
-            //     plugins: ["@emotion/babel-plugin"],
-            //   },
+            development: {
+              plugins: [["@emotion/babel-plugin", { sourceMap: true }], require.resolve("react-refresh/babel")],
+            },
+            production: {
+              plugins: ["@emotion/babel-plugin"],
+            },
           },
         },
       },
@@ -69,6 +69,7 @@ const config: Configuration = {
     publicPath: "/dist/",
   },
   devServer: {
+    historyApiFallback: true,
     port: 3090,
     devMiddleware: { publicPath: "/dist/" },
     static: { directory: path.resolve(__dirname) },
