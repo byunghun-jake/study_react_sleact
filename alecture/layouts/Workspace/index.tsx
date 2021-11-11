@@ -15,28 +15,30 @@ import {
   Workspaces,
   WorkspaceWrapper,
 } from "./styles"
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, Route, Switch } from "react-router-dom"
 import { IUser } from "@typings/db"
 import DMList from "@components/DMList"
+import DirectMessage from "@pages/DirectMessage"
+import Channel from "@pages/Channel"
 
 const Workspace = () => {
   const { workspace } = useParams<{ workspace: string }>()
-  const { data: userData } = useSWR<IUser>("/api/users", fetcher)
+  const { data: myData } = useSWR<IUser>("/api/users", fetcher)
 
   return (
     <div>
       <Header>
-        {userData && (
+        {myData && (
           <RightMenu>
             <span>
-              <ProfileImg src={gravatar.url(userData.email, { s: "36px", d: "retro" })} />
+              <ProfileImg src={gravatar.url(myData.email, { s: "36px", d: "retro" })} />
             </span>
           </RightMenu>
         )}
       </Header>
       <WorkspaceWrapper>
         <Workspaces>
-          {userData?.Workspaces.map((ws) => {
+          {myData?.Workspaces.map((ws) => {
             return (
               <Link key={ws.id} to={`/workspace/${ws.url}`}>
                 <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
@@ -46,12 +48,18 @@ const Workspace = () => {
           <AddButton>+</AddButton>
         </Workspaces>
         <Channels>
-          <WorkspaceName>{userData?.Workspaces.find((v) => v.url === workspace)?.name}</WorkspaceName>
+          <WorkspaceName>{myData?.Workspaces.find((v) => v.url === workspace)?.name}</WorkspaceName>
           <MenuScroll>
             <DMList></DMList>
           </MenuScroll>
         </Channels>
-        <Chats />
+        <Chats>
+          {/* 같은 영역 내에서 주소가 바뀜에 따라 역할이 달라짐 = Route 사용 */}
+          <Switch>
+            <Route path="/workspace/:workspace/channel/:channel" component={Channel} />
+            <Route path="/workspace/:workspace/dm/:id" component={DirectMessage} />
+          </Switch>
+        </Chats>
       </WorkspaceWrapper>
     </div>
   )
