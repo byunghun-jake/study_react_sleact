@@ -1,5 +1,5 @@
 import fetcher from "@utils/fetcher"
-import React from "react"
+import React, { useEffect } from "react"
 import useSWR from "swr"
 import gravatar from "gravatar"
 import {
@@ -20,10 +20,26 @@ import { IUser } from "@typings/db"
 import DMList from "@components/DMList"
 import DirectMessage from "@pages/DirectMessage"
 import Channel from "@pages/Channel"
+import useSocket from "@hooks/useSocket"
 
 const Workspace = () => {
   const { workspace } = useParams<{ workspace: string }>()
   const { data: myData } = useSWR<IUser>("/api/users", fetcher)
+  const { data: userData } = useSWR<IUser | false>("/api/users", fetcher)
+  const [socket, disconnectSocket] = useSocket(workspace)
+
+  useEffect(() => {
+    return () => {
+      console.info("소켓 연결이 끊어졌습니다.", workspace)
+      disconnectSocket()
+    }
+  }, [disconnectSocket, workspace])
+  useEffect(() => {
+    if (userData) {
+      console.info("로그인하자")
+      socket?.emit("login", { id: userData?.id, channels: [] })
+    }
+  }, [userData])
 
   return (
     <div>
